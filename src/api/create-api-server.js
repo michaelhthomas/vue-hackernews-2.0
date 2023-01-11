@@ -1,4 +1,5 @@
-import Firebase from 'firebase'
+import Firebase from 'firebase/compat/app'
+import 'firebase/compat/database'
 import LRU from 'lru-cache'
 
 export function createAPI ({ config, version }) {

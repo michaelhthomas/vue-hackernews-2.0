@@ -27,7 +27,7 @@ function createRenderer (bundle, options) {
     // this is only needed when vue-server-renderer is npm-linked
     basedir: resolve('./dist'),
     // recommended for performance
-    runInNewContext: false
+    runInNewContext: false,
   }))
 }
 
@@ -45,7 +45,7 @@ if (isProd) {
   const clientManifest = require('./dist/vue-ssr-client-manifest.json')
   renderer = createRenderer(bundle, {
     template,
-    clientManifest
+    clientManifest,
   })
 } else {
   // In development: setup the dev server with watch and hot-reload,
@@ -113,7 +113,9 @@ function render (req, res) {
 }
 
 app.get('*', isProd ? render : (req, res) => {
-  readyPromise.then(() => render(req, res))
+  readyPromise.then(() => {
+    render(req, res)
+  })
 })
 
 const port = process.env.PORT || 8080

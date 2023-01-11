@@ -1,8 +1,11 @@
+const path = require('path')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
 const base = require('./webpack.base.config')
 const nodeExternals = require('webpack-node-externals')
 const VueSSRServerPlugin = require('vue-server-renderer/server-plugin')
+
+const isProd = process.env.NODE_ENV === 'production'
 
 module.exports = merge(base, {
   target: 'node',
@@ -17,11 +20,32 @@ module.exports = merge(base, {
       'create-api': './create-api-server.js'
     }
   },
+  module: {
+    rules: [
+      {
+        test: /\.styl(us)?$/,
+        use: [
+          ...(isProd ? [
+            {
+              loader: path.resolve('build/css-extract-plugin.js')
+            }
+            ] : []),
+          {
+            loader: 'css-loader',
+            options: {
+                esModule: false
+            }
+          },
+          'stylus-loader'
+        ]
+      },
+    ]
+  },
   // https://webpack.js.org/configuration/externals/#externals
   // https://github.com/liady/webpack-node-externals
   externals: nodeExternals({
     // do not externalize CSS files in case we need to import it from a dep
-    whitelist: /\.css$/
+    allowlist: /\.css$/
   }),
   plugins: [
     new webpack.DefinePlugin({
